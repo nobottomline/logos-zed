@@ -23,6 +23,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "preproc_import"
+        },
+        {
+          "type": "SYMBOL",
           "name": "preproc_directive"
         },
         {
@@ -136,24 +140,172 @@
         ]
       }
     },
+    "preproc_import": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "preproc_import_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_inline_whitespace"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "system_header"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "string_literal"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "preproc_rest"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
     "preproc_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "preproc_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "preproc_rest"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "_inline_whitespace": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[ \\t]+"
+      }
+    },
+    "preproc_import_keyword": {
       "type": "TOKEN",
       "content": {
         "type": "PREC",
         "value": 10,
         "content": {
-          "type": "SEQ",
+          "type": "CHOICE",
           "members": [
             {
               "type": "STRING",
-              "value": "#"
+              "value": "#import"
             },
             {
-              "type": "PATTERN",
-              "value": "[^\\n]*"
+              "type": "STRING",
+              "value": "#include"
             }
           ]
         }
+      }
+    },
+    "preproc_keyword": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 10,
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "#define"
+            },
+            {
+              "type": "STRING",
+              "value": "#undef"
+            },
+            {
+              "type": "STRING",
+              "value": "#if"
+            },
+            {
+              "type": "STRING",
+              "value": "#ifdef"
+            },
+            {
+              "type": "STRING",
+              "value": "#ifndef"
+            },
+            {
+              "type": "STRING",
+              "value": "#elif"
+            },
+            {
+              "type": "STRING",
+              "value": "#else"
+            },
+            {
+              "type": "STRING",
+              "value": "#endif"
+            },
+            {
+              "type": "STRING",
+              "value": "#pragma"
+            },
+            {
+              "type": "STRING",
+              "value": "#error"
+            },
+            {
+              "type": "STRING",
+              "value": "#warning"
+            }
+          ]
+        }
+      }
+    },
+    "system_header": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 8,
+        "content": {
+          "type": "PATTERN",
+          "value": "<[A-Za-z0-9_./+-]+>"
+        }
+      }
+    },
+    "preproc_rest": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[^\\n]+"
       }
     },
     "logos_orig_pointer": {

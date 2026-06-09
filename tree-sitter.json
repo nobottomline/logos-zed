@@ -17,8 +17,7 @@
     "description": "A lexical Tree-sitter grammar for Theos Logos files.",
     "authors": [
       {
-        "name": "Great Love",
-        "email": "68994918+nobottomline@users.noreply.github.com"
+        "name": "Great Love (nobottomline)"
       }
     ]
   },

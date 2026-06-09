@@ -1,6 +1,8 @@
 (comment) @comment
 
-(preproc_directive) @preproc
+(preproc_import_keyword) @preproc
+(preproc_keyword) @preproc
+(system_header) @string.special
 
 (logos_orig_pointer) @keyword @preproc
 (logos_directive) @keyword @preproc

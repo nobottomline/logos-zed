@@ -1,5 +1,51 @@
 [
   {
+    "type": "preproc_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "preproc_keyword",
+          "named": true
+        },
+        {
+          "type": "preproc_rest",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "preproc_import",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "preproc_import_keyword",
+          "named": true
+        },
+        {
+          "type": "preproc_rest",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        },
+        {
+          "type": "system_header",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "source_file",
     "named": true,
     "root": true,
@@ -62,6 +108,10 @@
         },
         {
           "type": "preproc_directive",
+          "named": true
+        },
+        {
+          "type": "preproc_import",
           "named": true
         },
         {
@@ -136,7 +186,15 @@
     "named": true
   },
   {
-    "type": "preproc_directive",
+    "type": "preproc_import_keyword",
+    "named": true
+  },
+  {
+    "type": "preproc_keyword",
+    "named": true
+  },
+  {
+    "type": "preproc_rest",
     "named": true
   },
   {
@@ -149,6 +207,10 @@
   },
   {
     "type": "string_literal",
+    "named": true
+  },
+  {
+    "type": "system_header",
     "named": true
   },
   {

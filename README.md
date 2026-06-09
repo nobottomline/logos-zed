@@ -29,7 +29,7 @@ Before submitting to `zed-industries/extensions`:
 
 1. Create a public GitHub repository for this project.
 2. Update `extension.toml`:
-   - confirm `authors` is set to `Great Love <68994918+nobottomline@users.noreply.github.com>`;
+   - confirm `authors` is set to `Great Love (nobottomline)`;
    - set the top-level `repository` to the public extension repository;
    - set `[grammars.logos].repository` to the public grammar repository;
    - set `[grammars.logos].rev` to a real commit SHA.

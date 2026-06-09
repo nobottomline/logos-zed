@@ -27,6 +27,7 @@ module.exports = grammar({
     _token: $ => choice(
       $._whitespace,
       $.comment,
+      $.preproc_import,
       $.preproc_directive,
       $.logos_orig_pointer,
       $.logos_directive,
@@ -53,7 +54,42 @@ module.exports = grammar({
       seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/")
     )),
 
-    preproc_directive: _ => token(prec(PREC.directive, seq("#", /[^\n]*/))),
+    preproc_import: $ => seq(
+      $.preproc_import_keyword,
+      optional($._inline_whitespace),
+      choice($.system_header, $.string_literal),
+      optional($.preproc_rest)
+    ),
+
+    preproc_directive: $ => seq(
+      $.preproc_keyword,
+      optional($.preproc_rest)
+    ),
+
+    _inline_whitespace: _ => token(/[ \t]+/),
+
+    preproc_import_keyword: _ => token(prec(PREC.directive, choice(
+      "#import",
+      "#include"
+    ))),
+
+    preproc_keyword: _ => token(prec(PREC.directive, choice(
+      "#define",
+      "#undef",
+      "#if",
+      "#ifdef",
+      "#ifndef",
+      "#elif",
+      "#else",
+      "#endif",
+      "#pragma",
+      "#error",
+      "#warning"
+    ))),
+
+    system_header: _ => token(prec(PREC.literal, /<[A-Za-z0-9_./+-]+>/)),
+
+    preproc_rest: _ => token(/[^\n]+/),
 
     logos_orig_pointer: _ => token(prec(PREC.directive, "&%orig")),
 
