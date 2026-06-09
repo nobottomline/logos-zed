@@ -1,0 +1,71 @@
+================================================================================
+Basic hook
+================================================================================
+
+%hook ClassName
+%orig;
+%end
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (logos_directive)
+  (identifier)
+  (logos_directive)
+  (punctuation)
+  (logos_directive))
+
+================================================================================
+New method signature
+================================================================================
+
+%new(v@:@)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (logos_directive)
+  (open_bracket)
+  (identifier)
+  (operator)
+  (punctuation)
+  (operator)
+  (close_bracket))
+
+================================================================================
+Function hook and constructor
+================================================================================
+
+%hookf(BOOL, MGGetBoolAnswer, CFStringRef string) {
+    return %orig;
+}
+
+%ctor {
+    %init(GroupName);
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (logos_directive)
+  (open_bracket)
+  (builtin_type)
+  (punctuation)
+  (identifier)
+  (punctuation)
+  (identifier)
+  (identifier)
+  (close_bracket)
+  (open_bracket)
+  (keyword)
+  (logos_directive)
+  (punctuation)
+  (close_bracket)
+  (logos_directive)
+  (open_bracket)
+  (logos_directive)
+  (open_bracket)
+  (identifier)
+  (close_bracket)
+  (punctuation)
+  (close_bracket))

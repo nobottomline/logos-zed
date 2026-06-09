@@ -1,0 +1,11 @@
+node_modules/
+.DS_Store
+grammars/
+examples/Tweak2.xm
+target/
+build/
+*.wasm
+*.dylib
+*.so
+*.dll
+*.a
