@@ -1,278 +1,167 @@
 /**
- * @file Lexical parser for Theos Logos files.
+ * @file Theos Logos grammar for tree-sitter.
  * @license MIT
  */
 
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
 
-const PREC = {
-  directive: 10,
-  literal: 8,
-  keyword: 6,
-  identifier: 1,
-  unknown: -1,
-};
+const Objc = require("tree-sitter-objc/grammar");
 
-module.exports = grammar({
+const LOGOS_DIRECTIVES = [
+  "%config",
+  "%hookf",
+  "%hook",
+  "%group",
+  "%subclass",
+  "%property",
+  "%new",
+  "%end",
+  "%ctor",
+  "%dtor",
+  "%init",
+  "%orig",
+  "%log",
+  "%c",
+];
+
+module.exports = grammar(Objc, {
   name: "logos",
 
-  extras: _ => [],
-
-  word: $ => $.identifier,
-
   rules: {
-    source_file: $ => repeat($._token),
+    _top_level_item: ($, original) => choice(
+      original,
+      $.logos_config,
+      $.logos_group,
+      $.logos_hook,
+      $.logos_subclass,
+      $.logos_hookf,
+      $.logos_ctor,
+      $.logos_dtor,
+    ),
 
-    _token: $ => choice(
-      $._whitespace,
-      $.comment,
-      $.preproc_import,
-      $.preproc_directive,
+    implementation_definition: ($, original) => choice(
+      original,
+      $.logos_property,
+      $.logos_new,
+      $.logos_statement,
+    ),
+
+    _expression_not_binary: ($, original) => choice(
+      original,
+      $.logos_expression,
+    ),
+
+    logos_config: $ => prec.right(1, seq(
+      field("directive", alias("%config", $.logos_directive)),
+      $.logos_argument_list,
+      optional(";"),
+    )),
+
+    logos_group: $ => seq(
+      field("directive", alias("%group", $.logos_directive)),
+      field("name", $.identifier),
+      repeat($._top_level_item),
+      $.logos_end,
+    ),
+
+    logos_hook: $ => seq(
+      field("directive", alias("%hook", $.logos_directive)),
+      field("class", $.identifier),
+      optional(seq("(", field("category", optional($.identifier)), ")")),
+      repeat($.implementation_definition),
+      $.logos_end,
+    ),
+
+    logos_subclass: $ => seq(
+      field("directive", alias("%subclass", $.logos_directive)),
+      field("class", $.identifier),
+      ":",
+      field("superclass", $.identifier),
+      optional(field("protocols", $.protocol_reference_list)),
+      repeat($.implementation_definition),
+      $.logos_end,
+    ),
+
+    logos_hookf: $ => seq(
+      field("directive", alias("%hookf", $.logos_directive)),
+      $.logos_argument_list,
+      field("body", $.compound_statement),
+    ),
+
+    logos_ctor: $ => seq(
+      field("directive", alias("%ctor", $.logos_directive)),
+      optional($.logos_argument_list),
+      field("body", $.compound_statement),
+    ),
+
+    logos_dtor: $ => seq(
+      field("directive", alias("%dtor", $.logos_directive)),
+      optional($.logos_argument_list),
+      field("body", $.compound_statement),
+    ),
+
+    logos_property: $ => seq(
+      field("directive", alias("%property", $.logos_directive)),
+      optional(token(/[^;\n]+/)),
+      ";",
+    ),
+
+    logos_new: $ => prec.right(1, seq(
+      field("directive", alias("%new", $.logos_directive)),
+      optional($.logos_argument_list),
+      optional(";"),
+    )),
+
+    logos_statement: $ => prec.right(1, seq(
+      $.logos_expression,
+      optional(";"),
+    )),
+
+    logos_expression: $ => choice(
+      $.logos_orig,
+      $.logos_init,
+      $.logos_log,
+      $.logos_class_lookup,
       $.logos_orig_pointer,
-      $.logos_directive,
-      $.objc_keyword,
-      $.builtin_type,
-      $.keyword,
-      $.objc_string_literal,
-      $.string_literal,
-      $.character_literal,
-      $.number_literal,
-      $.selector_part,
-      $.identifier,
-      $.operator,
-      $.open_bracket,
-      $.close_bracket,
-      $.punctuation,
-      $.unknown
     ),
 
-    _whitespace: _ => token(/[ \t\r\n\f\uFEFF\u2060\u200B]+/),
-
-    comment: _ => token(choice(
-      seq("//", /[^\n]*/),
-      seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/")
+    logos_orig: $ => prec.right(1, seq(
+      field("directive", alias("%orig", $.logos_directive)),
+      optional($.logos_argument_list),
     )),
 
-    preproc_import: $ => seq(
-      $.preproc_import_keyword,
-      optional($._inline_whitespace),
-      choice($.system_header, $.string_literal),
-      optional($.preproc_rest)
-    ),
-
-    preproc_directive: $ => seq(
-      $.preproc_keyword,
-      optional($.preproc_rest)
-    ),
-
-    _inline_whitespace: _ => token(/[ \t]+/),
-
-    preproc_import_keyword: _ => token(prec(PREC.directive, choice(
-      "#import",
-      "#include"
-    ))),
-
-    preproc_keyword: _ => token(prec(PREC.directive, choice(
-      "#define",
-      "#undef",
-      "#if",
-      "#ifdef",
-      "#ifndef",
-      "#elif",
-      "#else",
-      "#endif",
-      "#pragma",
-      "#error",
-      "#warning"
-    ))),
-
-    system_header: _ => token(prec(PREC.literal, /<[A-Za-z0-9_./+-]+>/)),
-
-    preproc_rest: _ => token(/[^\n]+/),
-
-    logos_orig_pointer: _ => token(prec(PREC.directive, "&%orig")),
-
-    logos_directive: _ => token(prec(PREC.directive, choice(
-      "%config",
-      "%hookf",
-      "%hook",
-      "%group",
-      "%subclass",
-      "%property",
-      "%new",
-      "%end",
-      "%ctor",
-      "%dtor",
-      "%init",
-      "%orig",
-      "%log",
-      "%c"
-    ))),
-
-    objc_keyword: _ => token(prec(PREC.keyword, choice(
-      "@autoreleasepool",
-      "@catch",
-      "@class",
-      "@defs",
-      "@dynamic",
-      "@encode",
-      "@end",
-      "@finally",
-      "@implementation",
-      "@import",
-      "@interface",
-      "@optional",
-      "@package",
-      "@private",
-      "@property",
-      "@protected",
-      "@protocol",
-      "@public",
-      "@required",
-      "@selector",
-      "@synthesize",
-      "@throw",
-      "@try"
-    ))),
-
-    builtin_type: _ => token(prec(PREC.keyword, choice(
-      "BOOL",
-      "Class",
-      "IMP",
-      "SEL",
-      "id",
-      "instancetype",
-      "void"
-    ))),
-
-    keyword: _ => token(prec(PREC.keyword, choice(
-      "asm",
-      "auto",
-      "break",
-      "case",
-      "catch",
-      "class",
-      "const",
-      "constexpr",
-      "continue",
-      "default",
-      "delete",
-      "do",
-      "else",
-      "enum",
-      "extern",
-      "false",
-      "for",
-      "goto",
-      "if",
-      "inline",
-      "namespace",
-      "new",
-      "nil",
-      "nullptr",
-      "private",
-      "protected",
-      "public",
-      "return",
-      "self",
-      "sizeof",
-      "static",
-      "struct",
-      "super",
-      "switch",
-      "template",
-      "this",
-      "throw",
-      "true",
-      "try",
-      "typedef",
-      "typename",
-      "union",
-      "using",
-      "volatile",
-      "while",
-      "NO",
-      "NULL",
-      "YES"
-    ))),
-
-    objc_string_literal: _ => token(prec(PREC.literal, seq(
-      "@\"",
-      repeat(choice(/[^"\\\n]/, /\\(.|\n)/)),
-      "\""
-    ))),
-
-    string_literal: _ => token(prec(PREC.literal, seq(
-      "\"",
-      repeat(choice(/[^"\\\n]/, /\\(.|\n)/)),
-      "\""
-    ))),
-
-    character_literal: _ => token(prec(PREC.literal, seq(
-      "'",
-      repeat1(choice(/[^'\\\n]/, /\\(.|\n)/)),
-      "'"
-    ))),
-
-    number_literal: _ => token(prec(PREC.literal, choice(
-      /0[xX][0-9a-fA-F]+[uUlL]*/,
-      /[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?[fFuUlL]*/
-    ))),
-
-    selector_part: _ => token(prec(PREC.identifier + 1, /[A-Za-z_][A-Za-z0-9_]*:/)),
-
-    identifier: _ => token(prec(PREC.identifier, /[A-Za-z_][A-Za-z0-9_]*/)),
-
-    operator: _ => token(choice(
-      "...",
-      "::",
-      "->",
-      "++",
-      "--",
-      "==",
-      "!=",
-      "<=",
-      ">=",
-      "&&",
-      "||",
-      "+=",
-      "-=",
-      "*=",
-      "/=",
-      "%=",
-      "&=",
-      "|=",
-      "^=",
-      "<<=",
-      ">>=",
-      "<<",
-      ">>",
-      "=>",
-      "+",
-      "-",
-      "*",
-      "/",
-      "%",
-      "=",
-      "<",
-      ">",
-      "!",
-      "~",
-      "&",
-      "|",
-      "^",
-      "@",
-      "?",
-      "."
+    logos_init: $ => prec.right(1, seq(
+      field("directive", alias("%init", $.logos_directive)),
+      optional($.logos_argument_list),
     )),
 
-    open_bracket: _ => token(choice("(", "[", "{", "<")),
+    logos_log: $ => prec.right(1, seq(
+      field("directive", alias("%log", $.logos_directive)),
+      optional($.logos_argument_list),
+    )),
 
-    close_bracket: _ => token(choice(")", "]", "}", ">")),
+    logos_class_lookup: $ => seq(
+      field("directive", alias("%c", $.logos_directive)),
+      $.logos_argument_list,
+    ),
 
-    punctuation: _ => token(choice(";", ",", ":")),
+    logos_orig_pointer: $ => alias("&%orig", $.logos_directive),
 
-    unknown: _ => token(prec(PREC.unknown, /./)),
+    logos_end: $ => alias("%end", $.logos_directive),
+
+    logos_argument_list: $ => seq(
+      "(",
+      repeat(choice(
+        $.logos_argument_list,
+        $.logos_expression,
+        $.comment,
+        token(/[^()%\n]+/),
+        token(/%[A-Za-z_][A-Za-z0-9_]*/),
+      )),
+      ")",
+    ),
+
+    logos_directive: _ => token(choice(...LOGOS_DIRECTIVES)),
   },
 });

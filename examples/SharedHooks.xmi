@@ -1,0 +1,26 @@
+#import <Foundation/Foundation.h>
+
+#define GL_CPP_GROUP SharedObjectiveCppHooks
+#define GL_TARGET_CLASS NSProcessInfo
+
+%group GL_CPP_GROUP
+
+%hook GL_TARGET_CLASS
+
+- (NSString *)processName {
+    NSString *original = %orig;
+    return [NSString stringWithFormat:@"logos:%@", original];
+}
+
+%new
+- (BOOL)gl_isSystemProcess {
+    return [self.processName hasPrefix:@"com.apple."];
+}
+
+%end
+
+%end
+
+%ctor {
+    %init(GL_CPP_GROUP);
+}

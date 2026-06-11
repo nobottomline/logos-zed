@@ -8,29 +8,58 @@ Basic hook
 
 --------------------------------------------------------------------------------
 
-(source_file
-  (logos_directive)
-  (identifier)
-  (logos_directive)
-  (punctuation)
-  (logos_directive))
+(translation_unit
+  (logos_hook
+    (logos_directive)
+    (identifier)
+    (implementation_definition
+      (logos_statement
+        (logos_expression
+          (logos_orig
+            (logos_directive)))))
+    (logos_end
+      (logos_directive))))
 
 ================================================================================
 New method signature
 ================================================================================
 
+%hook ClassName
 %new(v@:@)
+- (void)setObject:(id)object {
+    %orig(object);
+}
+%end
 
 --------------------------------------------------------------------------------
 
-(source_file
-  (logos_directive)
-  (open_bracket)
-  (identifier)
-  (operator)
-  (punctuation)
-  (operator)
-  (close_bracket))
+(translation_unit
+  (logos_hook
+    (logos_directive)
+    (identifier)
+    (implementation_definition
+      (logos_new
+        (logos_directive)
+        (logos_argument_list)))
+    (implementation_definition
+      (method_definition
+        (method_type
+          (type_name
+            (primitive_type)))
+        (identifier)
+        (method_parameter
+          (method_type
+            (type_name
+              (typedefed_specifier)))
+          (identifier))
+        (compound_statement
+          (expression_statement
+            (logos_expression
+              (logos_orig
+                (logos_directive)
+                (logos_argument_list)))))))
+    (logos_end
+      (logos_directive))))
 
 ================================================================================
 Function hook and constructor
@@ -46,26 +75,170 @@ Function hook and constructor
 
 --------------------------------------------------------------------------------
 
-(source_file
-  (logos_directive)
-  (open_bracket)
-  (builtin_type)
-  (punctuation)
-  (identifier)
-  (punctuation)
-  (identifier)
-  (identifier)
-  (close_bracket)
-  (open_bracket)
-  (keyword)
-  (logos_directive)
-  (punctuation)
-  (close_bracket)
-  (logos_directive)
-  (open_bracket)
-  (logos_directive)
-  (open_bracket)
-  (identifier)
-  (close_bracket)
-  (punctuation)
-  (close_bracket))
+(translation_unit
+  (logos_hookf
+    (logos_directive)
+    (logos_argument_list)
+    (compound_statement
+      (return_statement
+        (logos_expression
+          (logos_orig
+            (logos_directive))))))
+  (logos_ctor
+    (logos_directive)
+    (compound_statement
+      (expression_statement
+        (logos_expression
+          (logos_init
+            (logos_directive)
+            (logos_argument_list)))))))
+
+================================================================================
+Runtime subclass with protocols
+================================================================================
+
+%subclass OverlayController : UIViewController <UIGestureRecognizerDelegate>
+%property (nonatomic, strong) UILabel *label;
+%new
+- (void)show {
+    %log;
+}
+%end
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (logos_subclass
+    (logos_directive)
+    (identifier)
+    (identifier)
+    (protocol_reference_list
+      (identifier))
+    (implementation_definition
+      (logos_property
+        (logos_directive)))
+    (implementation_definition
+      (logos_new
+        (logos_directive)))
+    (implementation_definition
+      (method_definition
+        (method_type
+          (type_name
+            (primitive_type)))
+        (identifier)
+        (compound_statement
+          (expression_statement
+            (logos_expression
+              (logos_log
+                (logos_directive)))))))
+    (logos_end
+      (logos_directive))))
+
+================================================================================
+Grouped hooks and explicit initialization
+================================================================================
+
+%group ApplicationHooks
+%hook UIApplication
+- (void)setDelegate:(id)delegate {
+    %orig(delegate);
+}
+%end
+%end
+
+%ctor {
+    %init(ApplicationHooks, UIApplication=objc_getClass("UIApplication"));
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (logos_group
+    (logos_directive)
+    (identifier)
+    (logos_hook
+      (logos_directive)
+      (identifier)
+      (implementation_definition
+        (method_definition
+          (method_type
+            (type_name
+              (primitive_type)))
+          (identifier)
+          (method_parameter
+            (method_type
+              (type_name
+                (typedefed_specifier)))
+            (identifier))
+          (compound_statement
+            (expression_statement
+              (logos_expression
+                (logos_orig
+                  (logos_directive)
+                  (logos_argument_list)))))))
+      (logos_end
+        (logos_directive)))
+    (logos_end
+      (logos_directive)))
+  (logos_ctor
+    (logos_directive)
+    (compound_statement
+      (expression_statement
+        (logos_expression
+          (logos_init
+            (logos_directive)
+            (logos_argument_list
+              (logos_argument_list))))))))
+
+================================================================================
+Configuration, original pointer, and destructor
+================================================================================
+
+%config(generator=internal);
+
+%hookf(BOOL, FeatureCheck, CFStringRef key) {
+    BOOL (*original)(CFStringRef) = &%orig;
+    return original(key);
+}
+
+%dtor {
+    NSLog(@"Unloaded");
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (logos_config
+    (logos_directive)
+    (logos_argument_list))
+  (logos_hookf
+    (logos_directive)
+    (logos_argument_list)
+    (compound_statement
+      (declaration
+        (typedefed_specifier)
+        (init_declarator
+          (function_declarator
+            (parenthesized_declarator
+              (pointer_declarator
+                (identifier)))
+            (parameter_list
+              (parameter_declaration
+                (type_identifier))))
+          (logos_expression
+            (logos_orig_pointer
+              (logos_directive)))))
+      (return_statement
+        (call_expression
+          (identifier)
+          (argument_list
+            (identifier))))))
+  (logos_dtor
+    (logos_directive)
+    (compound_statement
+      (expression_statement
+        (call_expression
+          (identifier)
+          (argument_list
+            (string_literal
+              (string_content))))))))

@@ -1,2 +1,5 @@
-(open_bracket) @open
-(close_bracket) @close
+("(" @open ")" @close)
+("[" @open "]" @close)
+("{" @open "}" @close)
+("\"" @open "\"" @close)
+("'" @open "'" @close)

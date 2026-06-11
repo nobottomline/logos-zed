@@ -6,15 +6,17 @@
       "scope": "source.logos",
       "file-types": [
         "x",
-        "xm"
+        "xm",
+        "xi",
+        "xmi"
       ],
       "injection-regex": "^logos$"
     }
   ],
   "metadata": {
-    "version": "0.0.1",
+    "version": "0.1.0",
     "license": "MIT",
-    "description": "A lexical Tree-sitter grammar for Theos Logos files.",
+    "description": "A Tree-sitter Objective-C/C grammar extended with Theos Logos syntax.",
     "authors": [
       {
         "name": "Great Love (nobottomline)"

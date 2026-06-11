@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-logos-zed",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Tree-sitter grammar and Zed extension for Theos Logos syntax highlighting.",
   "license": "MIT",
   "private": true,
@@ -8,17 +8,20 @@
   "scripts": {
     "generate": "tree-sitter generate",
     "test": "tree-sitter test",
-    "parse": "tree-sitter parse examples/Tweak.xm examples/Tweak.x"
+    "parse": "tree-sitter parse --quiet examples/*.x examples/*.xm examples/*.xi examples/*.xmi"
   },
   "devDependencies": {
-    "tree-sitter-cli": "^0.24.7"
+    "tree-sitter-cli": "^0.24.7",
+    "tree-sitter-objc": "^3.0.2"
   },
   "tree-sitter": [
     {
       "scope": "source.logos",
       "file-types": [
         "x",
-        "xm"
+        "xm",
+        "xi",
+        "xmi"
       ]
     }
   ]

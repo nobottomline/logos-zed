@@ -1,6 +1,6 @@
 name = "Logos"
 grammar = "logos"
-path_suffixes = ["x", "xm"]
+path_suffixes = ["x", "xm", "xi", "xmi"]
 line_comments = ["// "]
 tab_size = 4
 hard_tabs = false
