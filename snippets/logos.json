@@ -1,0 +1,95 @@
+{
+  "Hook a class": {
+    "prefix": "%hook",
+    "body": ["%hook ${1:ClassName}", "$0", "%end"],
+    "description": "Open a %hook block for an existing class"
+  },
+  "Group of hooks": {
+    "prefix": "%group",
+    "body": ["%group ${1:GroupName}", "$0", "%end"],
+    "description": "Declare a hook group (initialize it later with %init)"
+  },
+  "Runtime subclass": {
+    "prefix": "%subclass",
+    "body": ["%subclass ${1:ClassName} : ${2:Superclass}", "$0", "%end"],
+    "description": "Create a subclass at runtime"
+  },
+  "Function hook": {
+    "prefix": "%hookf",
+    "body": [
+      "%hookf(${1:ReturnType}, ${2:functionName}, ${3:args}) {",
+      "\t${0:return %orig;}",
+      "}"
+    ],
+    "description": "Hook a C function"
+  },
+  "Constructor": {
+    "prefix": "%ctor",
+    "body": ["%ctor {", "\t$0", "}"],
+    "description": "Anonymous constructor, run when the tweak loads"
+  },
+  "Destructor": {
+    "prefix": "%dtor",
+    "body": ["%dtor {", "\t$0", "}"],
+    "description": "Anonymous destructor, run when the tweak unloads"
+  },
+  "New method": {
+    "prefix": "%new",
+    "body": ["%new", "$0"],
+    "description": "Add a new method to a hooked class or subclass"
+  },
+  "New method with type encoding": {
+    "prefix": "%new(signature)",
+    "body": ["%new(${1:v@:@})", "$0"],
+    "description": "Add a new method with an explicit Objective-C type encoding"
+  },
+  "Subclass property": {
+    "prefix": "%property",
+    "body": ["%property (${1:nonatomic, retain}) ${2:Type} ${3:name};"],
+    "description": "Add a property to a %subclass (like @property)"
+  },
+  "Initialize group": {
+    "prefix": "%init",
+    "body": ["%init(${1:GroupName});"],
+    "description": "Initialize a group's hooks (call inside %ctor)"
+  },
+  "Class lookup": {
+    "prefix": "%c",
+    "body": ["%c(${1:ClassName})"],
+    "description": "Resolve a class by name at runtime"
+  },
+  "Call original": {
+    "prefix": "%orig",
+    "body": ["%orig;"],
+    "description": "Call the original hooked method or function"
+  },
+  "Call original with arguments": {
+    "prefix": "%orig(args)",
+    "body": ["%orig(${1:args})"],
+    "description": "Call the original with explicit arguments"
+  },
+  "Log arguments": {
+    "prefix": "%log",
+    "body": ["%log;"],
+    "description": "Dump the current method's arguments to syslog"
+  },
+  "Logos config": {
+    "prefix": "%config",
+    "body": ["%config(${1:generator=internal});"],
+    "description": "Set a Logos configuration flag"
+  },
+  "Tweak scaffold": {
+    "prefix": "tweak",
+    "body": [
+      "%hook ${1:ClassName}",
+      "",
+      "- (void)${2:methodName} {",
+      "\t%orig;",
+      "\t$0",
+      "}",
+      "",
+      "%end"
+    ],
+    "description": "Basic %hook scaffold with one overridden method"
+  }
+}

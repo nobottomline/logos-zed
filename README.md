@@ -27,8 +27,13 @@ Supported file suffixes:
   `%hook`, `%subclass`, `%hookf`, `%ctor`, `%dtor`, `%property`, Objective-C
   methods/interfaces, and C functions via the outline panel and
   `editor: toggle outline` / symbol search.
+- **Snippets** (`snippets/logos.json`): scaffolds for every directive —
+  `%hook`, `%group`, `%subclass`, `%hookf`, `%ctor`, `%dtor`, `%new`,
+  `%property`, `%init`, `%c`, `%orig`, `%log`, `%config`, plus a `tweak`
+  starter block.
 - **Editing ergonomics**: bracket and quote auto-closing, bracket matching,
-  line comments (`//`) and block comments (`/* */`), and indentation rules.
+  line comments (`//`) and block comments (`/* */`), indentation rules, and
+  tree-sitter folding of `%hook` / `%group` / `%subclass` blocks.
 
 The parser is based on `tree-sitter-objc`, which itself extends
 `tree-sitter-c`. See `THIRD_PARTY_NOTICES.md` for license notices.

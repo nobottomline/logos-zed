@@ -6,6 +6,8 @@ description = "Syntax highlighting for Theos Logos .x, .xm, .xi, and .xmi files.
 authors = ["Great Love (nobottomline)"]
 repository = "https://github.com/nobottomline/logos-zed"
 
+snippets = ["snippets/logos.json"]
+
 [grammars.logos]
 repository = "https://github.com/nobottomline/logos-zed"
 rev = "6539758fdaad3c604b501548440bfef4f7cf81e8"
