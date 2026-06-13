@@ -116,7 +116,17 @@ Runtime subclass with protocols
       (identifier))
     (implementation_definition
       (logos_property
-        (logos_directive)))
+        (logos_directive)
+        (property_attributes_declaration
+          (property_attribute
+            (identifier))
+          (property_attribute
+            (identifier)))
+        (struct_declaration
+          (type_identifier)
+          (struct_declarator
+            (pointer_declarator
+              (identifier))))))
     (implementation_definition
       (logos_new
         (logos_directive)))
@@ -242,3 +252,62 @@ Configuration, original pointer, and destructor
           (argument_list
             (string_literal
               (string_content))))))))
+
+================================================================================
+Subclass property forms
+================================================================================
+
+%subclass Foo : UIView
+%property (nonatomic, copy) NSString *title;
+%property (strong) NSArray<NSString *> *items;
+%property (getter=isReady) BOOL ready;
+%end
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (logos_subclass
+    (logos_directive)
+    (identifier)
+    (identifier)
+    (implementation_definition
+      (logos_property
+        (logos_directive)
+        (property_attributes_declaration
+          (property_attribute
+            (identifier))
+          (property_attribute
+            (identifier)))
+        (struct_declaration
+          (type_identifier)
+          (struct_declarator
+            (pointer_declarator
+              (identifier))))))
+    (implementation_definition
+      (logos_property
+        (logos_directive)
+        (property_attributes_declaration
+          (property_attribute
+            (identifier)))
+        (struct_declaration
+          (generic_specifier
+            (type_identifier)
+            (type_name
+              (type_identifier)
+              (abstract_pointer_declarator)))
+          (struct_declarator
+            (pointer_declarator
+              (identifier))))))
+    (implementation_definition
+      (logos_property
+        (logos_directive)
+        (property_attributes_declaration
+          (property_attribute
+            (identifier)
+            (identifier)))
+        (struct_declaration
+          (typedefed_specifier)
+          (struct_declarator
+            (identifier)))))
+    (logos_end
+      (logos_directive))))

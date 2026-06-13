@@ -1,6 +1,6 @@
 # Logos for Zed
 
-Syntax highlighting for Theos Logos files in Zed, backed by Tree-sitter
+Language support for Theos Logos files in Zed, backed by Tree-sitter
 Objective-C and C grammars.
 
 Supported file suffixes:
@@ -10,14 +10,25 @@ Supported file suffixes:
 - `.xi`
 - `.xmi`
 
-Version `0.1.0` recognizes:
+## Features
 
-- C and Objective-C declarations, expressions, methods, messages, imports,
-  preprocessor directives, comments, strings, and literals;
-- `%config`, `%group`, `%hook`, `%subclass`, `%property`, `%new`, `%hookf`,
-  `%ctor`, `%dtor`, `%init`, `%orig`, `%log`, `%c`, and `%end`;
-- grouped hooks, runtime subclasses, protocol lists, function hooks, explicit
-  `%orig` arguments, and `&%orig`.
+- **Syntax highlighting** for C and Objective-C declarations, expressions,
+  methods, messages, imports, preprocessor directives, comments, strings, and
+  literals.
+- **All Logos directives** as documented in the
+  [Theos Logos syntax reference](https://theos.dev/docs/logos-syntax):
+  - top level: `%config`, `%hookf`, `%ctor`, `%dtor`;
+  - block level: `%group`, `%hook`, `%subclass`, `%property`, `%new`, `%end`;
+  - function level: `%init`, `%orig` (and `&%orig`), `%c`, `%log`.
+- **Structured constructs**: grouped hooks, runtime subclasses, protocol lists,
+  function hooks, explicit `%orig` arguments, and `%property` declarations whose
+  attributes, type, and name are highlighted like a native `@property`.
+- **Outline & symbol navigation** (`outline.scm`): jump between `%group`,
+  `%hook`, `%subclass`, `%hookf`, `%ctor`, `%dtor`, `%property`, Objective-C
+  methods/interfaces, and C functions via the outline panel and
+  `editor: toggle outline` / symbol search.
+- **Editing ergonomics**: bracket and quote auto-closing, bracket matching,
+  line comments (`//`) and block comments (`/* */`), and indentation rules.
 
 The parser is based on `tree-sitter-objc`, which itself extends
 `tree-sitter-c`. See `THIRD_PARTY_NOTICES.md` for license notices.
@@ -54,16 +65,22 @@ npm test
 npm run parse
 ```
 
-## Publishing Notes
+## Publishing
 
-Before submitting to `zed-industries/extensions`:
+This extension lives at
+[`nobottomline/logos-zed`](https://github.com/nobottomline/logos-zed) and is a
+single-repository setup: the Zed extension and the Tree-sitter grammar share
+this repository, with `grammar.js` and `src/parser.c` at the root.
 
-1. Create a public GitHub repository for this project.
-2. Update `extension.toml`:
-   - confirm `authors` is set to `Great Love (nobottomline)`;
-   - set the top-level `repository` to the public extension repository;
-   - set `[grammars.logos].repository` to the public grammar repository;
-   - set `[grammars.logos].rev` to a real commit SHA.
-3. Keep `LICENSE` in the repository root. Zed requires a recognized license for extension submissions.
+It is submitted to the Zed registry via
+[zed-industries/extensions#6428](https://github.com/zed-industries/extensions/pull/6428).
+When updating the published version:
 
-For a single-repository setup, the grammar repository can be this same repository if `grammar.js` and `src/parser.c` stay at the repository root.
+1. Bump `version` in `extension.toml`, `tree-sitter.json`, and `package.json`.
+2. Set `[grammars.logos].rev` to the commit that contains the matching
+   `grammar.js` / `src/parser.c`.
+3. Update the submodule pointer and `extensions.toml` entry in the
+   `zed-industries/extensions` fork.
+
+`LICENSE` must stay in the repository root; Zed requires a recognized license
+for extension submissions.

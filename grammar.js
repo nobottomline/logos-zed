@@ -103,8 +103,9 @@ module.exports = grammar(Objc, {
 
     logos_property: $ => seq(
       field("directive", alias("%property", $.logos_directive)),
-      optional(token(/[^;\n]+/)),
-      ";",
+      optional($.property_attributes_declaration),
+      optional(choice($.attribute_specifier, $.attribute_declaration)),
+      choice($.struct_declaration, $.atomic_declaration),
     ),
 
     logos_new: $ => prec.right(1, seq(
